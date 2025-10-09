@@ -1,0 +1,580 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    istio.io/rev: default
+    kubectl.kubernetes.io/default-container: dailyfeed-member
+    kubectl.kubernetes.io/default-logs-container: dailyfeed-member
+    kubectl.kubernetes.io/restartedAt: "2025-10-09T16:53:52+09:00"
+    prometheus.io/path: /stats/prometheus
+    prometheus.io/port: "15020"
+    prometheus.io/scrape: "true"
+    sidecar.istio.io/rewriteAppHTTPProbers: "false"
+    sidecar.istio.io/status: '{"initContainers":["istio-init","istio-proxy"],"containers":null,"volumes":["workload-socket","credential-socket","workload-certs","istio-envoy","istio-data","istio-podinfo","istio-token","istiod-ca-cert","istio-ca-crl"],"imagePullSecrets":null,"revision":"default"}'
+  creationTimestamp: "2025-10-09T07:53:52Z"
+  generateName: dailyfeed-member-5bb55c5f68-
+  generation: 1
+  labels:
+    app: dailyfeed-member
+    pod-template-hash: 5bb55c5f68
+    security.istio.io/tlsMode: istio
+    service.istio.io/canonical-name: dailyfeed-member
+    service.istio.io/canonical-revision: latest
+  name: dailyfeed-member-5bb55c5f68-87t7z
+  namespace: dailyfeed
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: dailyfeed-member-5bb55c5f68
+    uid: 9ea89953-1a04-41ef-9365-c0d602e5f77a
+  resourceVersion: "15936"
+  uid: 300256e8-778c-4582-b04d-521a03ded506
+spec:
+  containers:
+  - env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: local
+    - name: SERVER_PORT
+      value: "8080"
+    - name: MYSQL_JDBC_URL
+      value: jdbc:mysql://mysql.infra.svc.cluster.local:3306/dailyfeed?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
+    - name: MYSQL_USERNAME
+      value: dailyfeed
+    - name: MYSQL_PASSWORD
+      value: hitEnter###
+    - name: MYSQL_SCHEMA
+      value: dailyfeed
+    - name: REDIS_HOST
+      value: redis-master.infra.svc.cluster.local
+    - name: REDIS_PORT
+      value: "6379"
+    - name: SERVER_PORT
+      value: "8080"
+    - name: MEMBER_SERVICE_URL
+      value: http://dailyfeed-member-svc.dailyfeed.svc.cluster.local
+    - name: SEARCH_SERVICE_URL
+      value: http://dailyfeed-search-svc.dailyfeed.svc.cluster.local
+    - name: CONTENT_SERVICE_URL
+      value: http://dailyfeed-content-svc.dailyfeed.svc.cluster.local
+    - name: ACTIVITY_SERVICE_URL
+      value: http://dailyfeed-activity-svc.dailyfeed.svc.cluster.local
+    - name: SEARCH_SERVICE_URL
+      value: http://dailyfeed-search-svc.dailyfeed.svc.cluster.local
+    - name: IMAGE_SERVICE_URL
+      value: http://dailyfeed-image-svc.dailyfeed.svc.cluster.local
+    - name: JAVA_TOOL_OPTIONS
+      value: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    envFrom:
+    - configMapRef:
+        name: kafka-config
+    - secretRef:
+        name: kafka-secret
+    - configMapRef:
+        name: redis-config
+    - configMapRef:
+        name: mysql-config
+    - secretRef:
+        name: mysql-secret
+    - configMapRef:
+        name: mongodb-config
+    - secretRef:
+        name: mongodb-secret
+    image: alpha300uk/dailyfeed-member-svc:0.0.3
+    imagePullPolicy: Always
+    lifecycle:
+      preStop:
+        exec:
+          command:
+          - /bin/sh
+          - -c
+          - sleep 10
+    livenessProbe:
+      failureThreshold: 7
+      httpGet:
+        path: /healthcheck/live
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 30
+      periodSeconds: 1
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: dailyfeed-member
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthcheck/ready
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 30
+      periodSeconds: 1
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 500Mi
+    startupProbe:
+      failureThreshold: 60
+      httpGet:
+        path: /healthcheck/startup
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 30
+      periodSeconds: 1
+      successThreshold: 1
+      timeoutSeconds: 1
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-wrm66
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  initContainers:
+  - args:
+    - istio-iptables
+    - -p
+    - "15001"
+    - -z
+    - "15006"
+    - -u
+    - "1337"
+    - -m
+    - REDIRECT
+    - -i
+    - '*'
+    - -x
+    - ""
+    - -b
+    - '*'
+    - -d
+    - 15090,15021,15020
+    - --log_output_level=default:info
+    image: docker.io/istio/proxyv2:1.27.1
+    imagePullPolicy: IfNotPresent
+    name: istio-init
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+      requests:
+        cpu: 10m
+        memory: 40Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        add:
+        - NET_ADMIN
+        - NET_RAW
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: false
+      runAsGroup: 0
+      runAsNonRoot: false
+      runAsUser: 0
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-wrm66
+      readOnly: true
+  - args:
+    - proxy
+    - sidecar
+    - --domain
+    - $(POD_NAMESPACE).svc.cluster.local
+    - --proxyLogLevel=warning
+    - --proxyComponentLogLevel=misc:error
+    - --log_output_level=default:info
+    env:
+    - name: PILOT_CERT_PROVIDER
+      value: istiod
+    - name: CA_ADDR
+      value: istiod.istio-system.svc:15012
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: INSTANCE_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    - name: SERVICE_ACCOUNT
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.serviceAccountName
+    - name: HOST_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.hostIP
+    - name: ISTIO_CPU_LIMIT
+      valueFrom:
+        resourceFieldRef:
+          divisor: "0"
+          resource: limits.cpu
+    - name: PROXY_CONFIG
+      value: |
+        {}
+    - name: ISTIO_META_POD_PORTS
+      value: |-
+        [
+            {"containerPort":8080,"protocol":"TCP"}
+        ]
+    - name: ISTIO_META_APP_CONTAINERS
+      value: dailyfeed-member
+    - name: GOMEMLIMIT
+      valueFrom:
+        resourceFieldRef:
+          divisor: "0"
+          resource: limits.memory
+    - name: GOMAXPROCS
+      valueFrom:
+        resourceFieldRef:
+          divisor: "0"
+          resource: limits.cpu
+    - name: ISTIO_META_CLUSTER_ID
+      value: Kubernetes
+    - name: ISTIO_META_NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    - name: ISTIO_META_INTERCEPTION_MODE
+      value: REDIRECT
+    - name: ISTIO_META_WORKLOAD_NAME
+      value: dailyfeed-member
+    - name: ISTIO_META_OWNER
+      value: kubernetes://apis/apps/v1/namespaces/dailyfeed/deployments/dailyfeed-member
+    - name: ISTIO_META_MESH_ID
+      value: cluster.local
+    - name: TRUST_DOMAIN
+      value: cluster.local
+    image: docker.io/istio/proxyv2:1.27.1
+    imagePullPolicy: IfNotPresent
+    lifecycle:
+      preStop:
+        exec:
+          command:
+          - pilot-agent
+          - request
+          - --debug-port=15020
+          - POST
+          - drain
+    name: istio-proxy
+    ports:
+    - containerPort: 15090
+      name: http-envoy-prom
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 4
+      httpGet:
+        path: /healthz/ready
+        port: 15021
+        scheme: HTTP
+      periodSeconds: 15
+      successThreshold: 1
+      timeoutSeconds: 3
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+      requests:
+        cpu: 10m
+        memory: 40Mi
+    restartPolicy: Always
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsGroup: 1337
+      runAsNonRoot: true
+      runAsUser: 1337
+    startupProbe:
+      failureThreshold: 600
+      httpGet:
+        path: /healthz/ready
+        port: 15021
+        scheme: HTTP
+      periodSeconds: 1
+      successThreshold: 1
+      timeoutSeconds: 3
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/workload-spiffe-uds
+      name: workload-socket
+    - mountPath: /var/run/secrets/credential-uds
+      name: credential-socket
+    - mountPath: /var/run/secrets/workload-spiffe-credentials
+      name: workload-certs
+    - mountPath: /var/run/secrets/istio
+      name: istiod-ca-cert
+    - mountPath: /var/run/secrets/istio/crl
+      name: istio-ca-crl
+    - mountPath: /var/lib/istio/data
+      name: istio-data
+    - mountPath: /etc/istio/proxy
+      name: istio-envoy
+    - mountPath: /var/run/secrets/tokens
+      name: istio-token
+    - mountPath: /etc/istio/pod
+      name: istio-podinfo
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-wrm66
+      readOnly: true
+  nodeName: istio-cluster-worker
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - emptyDir: {}
+    name: workload-socket
+  - emptyDir: {}
+    name: credential-socket
+  - emptyDir: {}
+    name: workload-certs
+  - emptyDir:
+      medium: Memory
+    name: istio-envoy
+  - emptyDir: {}
+    name: istio-data
+  - downwardAPI:
+      defaultMode: 420
+      items:
+      - fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.labels
+        path: labels
+      - fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.annotations
+        path: annotations
+    name: istio-podinfo
+  - name: istio-token
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          audience: istio-ca
+          expirationSeconds: 43200
+          path: istio-token
+  - configMap:
+      defaultMode: 420
+      name: istio-ca-root-cert
+    name: istiod-ca-cert
+  - configMap:
+      defaultMode: 420
+      name: istio-ca-crl
+      optional: true
+    name: istio-ca-crl
+  - name: kube-api-access-wrm66
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2025-10-09T07:53:53Z"
+    observedGeneration: 1
+    status: "True"
+    type: PodReadyToStartContainers
+  - lastProbeTime: null
+    lastTransitionTime: "2025-10-09T07:53:55Z"
+    observedGeneration: 1
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2025-10-09T07:54:40Z"
+    observedGeneration: 1
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2025-10-09T07:54:40Z"
+    observedGeneration: 1
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2025-10-09T07:53:53Z"
+    observedGeneration: 1
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - allocatedResources:
+      cpu: 500m
+      memory: 500Mi
+    containerID: containerd://63da8537695cd98ad471c8efbc04134eb2a8b8a5f60bd0b1b7475dbd2633e47f
+    image: docker.io/alpha300uk/dailyfeed-member-svc:0.0.3
+    imageID: docker.io/alpha300uk/dailyfeed-member-svc@sha256:5a6b40138f98d2c759d98758d4fef8954f198e46a23e47d2450e2ad8076b4e36
+    lastState: {}
+    name: dailyfeed-member
+    ready: true
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 500Mi
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2025-10-09T07:54:08Z"
+    user:
+      linux:
+        gid: 0
+        supplementalGroups:
+        - 0
+        uid: 1000
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-wrm66
+      readOnly: true
+      recursiveReadOnly: Disabled
+  hostIP: 192.168.97.2
+  hostIPs:
+  - ip: 192.168.97.2
+  initContainerStatuses:
+  - allocatedResources:
+      cpu: 10m
+      memory: 40Mi
+    containerID: containerd://26f1d63eaf336923064e5b460f9dc070e51f6b750d17874fe7cbd993dcc476b7
+    image: docker.io/istio/proxyv2:1.27.1
+    imageID: docker.io/istio/proxyv2@sha256:d902f7f80be93a0521af5e5796d1e989f2107afd0725eca8881eb4c9848bd7bf
+    lastState: {}
+    name: istio-init
+    ready: true
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+      requests:
+        cpu: 10m
+        memory: 40Mi
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: containerd://26f1d63eaf336923064e5b460f9dc070e51f6b750d17874fe7cbd993dcc476b7
+        exitCode: 0
+        finishedAt: "2025-10-09T07:53:53Z"
+        reason: Completed
+        startedAt: "2025-10-09T07:53:53Z"
+    user:
+      linux:
+        gid: 0
+        supplementalGroups:
+        - 0
+        uid: 0
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-wrm66
+      readOnly: true
+      recursiveReadOnly: Disabled
+  - allocatedResources:
+      cpu: 10m
+      memory: 40Mi
+    containerID: containerd://77ee8984f2157ceefcde9d36a166723c95e280dc4c9fd6dc35275c720a5d8186
+    image: docker.io/istio/proxyv2:1.27.1
+    imageID: docker.io/istio/proxyv2@sha256:d902f7f80be93a0521af5e5796d1e989f2107afd0725eca8881eb4c9848bd7bf
+    lastState: {}
+    name: istio-proxy
+    ready: true
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+      requests:
+        cpu: 10m
+        memory: 40Mi
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2025-10-09T07:53:54Z"
+    user:
+      linux:
+        gid: 1337
+        supplementalGroups:
+        - 1337
+        uid: 1337
+    volumeMounts:
+    - mountPath: /var/run/secrets/workload-spiffe-uds
+      name: workload-socket
+    - mountPath: /var/run/secrets/credential-uds
+      name: credential-socket
+    - mountPath: /var/run/secrets/workload-spiffe-credentials
+      name: workload-certs
+    - mountPath: /var/run/secrets/istio
+      name: istiod-ca-cert
+    - mountPath: /var/run/secrets/istio/crl
+      name: istio-ca-crl
+    - mountPath: /var/lib/istio/data
+      name: istio-data
+    - mountPath: /etc/istio/proxy
+      name: istio-envoy
+    - mountPath: /var/run/secrets/tokens
+      name: istio-token
+    - mountPath: /etc/istio/pod
+      name: istio-podinfo
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-wrm66
+      readOnly: true
+      recursiveReadOnly: Disabled
+  observedGeneration: 1
+  phase: Running
+  podIP: 10.244.1.44
+  podIPs:
+  - ip: 10.244.1.44
+  qosClass: Burstable
+  startTime: "2025-10-09T07:53:53Z"
