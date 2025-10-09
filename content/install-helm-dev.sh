@@ -1,0 +1,1 @@
+helm install -n dailyfeed dailyfeed-content dailyfeed-backend-chart-0.1.0.tgz -f values-dev-content.yaml

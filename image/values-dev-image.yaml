@@ -1,0 +1,28 @@
+imageTag: 0.0.2
+appName: dailyfeed-image
+replicas: 2
+profile: dev
+portNumber: 8080
+envValues:
+- name: SERVER_PORT
+  value: "8080"
+- name: MEMBER_SERVICE_URL
+  value: http://dailyfeed-member-svc.dailyfeed.svc.cluster.local
+- name: SEARCH_SERVICE_URL
+  value: http://dailyfeed-search-svc.dailyfeed.svc.cluster.local
+- name: CONTENT_SERVICE_URL
+  value: http://dailyfeed-content-svc.dailyfeed.svc.cluster.local
+- name: ACTIVITY_SERVICE_URL
+  value: http://dailyfeed-activity-svc.dailyfeed.svc.cluster.local
+- name: SEARCH_SERVICE_URL
+  value: http://dailyfeed-search-svc.dailyfeed.svc.cluster.local
+- name: IMAGE_SERVICE_URL
+  value: http://dailyfeed-image-svc.dailyfeed.svc.cluster.local
+configSecretItems:
+- kafka
+- redis-nosecret
+- mysql
+- mongodb
+porbeValues:
+  startup:
+    failureThreshold: 60

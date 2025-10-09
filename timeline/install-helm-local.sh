@@ -1,0 +1,1 @@
+helm install -n dailyfeed dailyfeed-timeline dailyfeed-backend-chart-0.1.0.tgz -f values-local-timeline.yaml
