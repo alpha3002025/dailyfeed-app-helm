@@ -44,3 +44,7 @@ cd frontend
 source install-local.sh
 cd ..
 echo ""
+
+
+echo "✏️ check -n dailyfeed"
+k get all -n dailyfeed
