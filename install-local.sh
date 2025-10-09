@@ -25,7 +25,7 @@ cd ..
 echo ""
 
 
-echo "👨🏽‍🎨 install image"
+echo "👨🏽‍🎨🖼 install image"
 cd image
 source install-helm-local.sh
 cd ..
