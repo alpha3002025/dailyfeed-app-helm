@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dailyfeed-frontend-config
+  namespace: dailyfeed
+  labels:
+    app: dailyfeed-frontend
+    environment: local-was
+data:
+  # Local WAS environment - Frontend runs in K8s, connects to local WAS backends
+  #
+  # Supported environments:
+  # - Docker Desktop (Mac/Windows): host.docker.internal works out of the box
+  # - OrbStack (Mac): host.docker.internal works out of the box
+  # - Minikube / Linux: Replace host.docker.internal with your host machine IP
+  #   Example: http://192.168.1.100:8084
+  NEXT_PUBLIC_MEMBER_SERVICE_URL: "http://host.docker.internal:8084"
+  NEXT_PUBLIC_CONTENT_SERVICE_URL: "http://host.docker.internal:8081"
+  NEXT_PUBLIC_TIMELINE_SERVICE_URL: "http://host.docker.internal:8082"
+  NEXT_PUBLIC_ACTIVITY_SERVICE_URL: "http://host.docker.internal:8086"
+  NEXT_PUBLIC_IMAGE_SERVICE_URL: "http://host.docker.internal:8085"
+  NEXT_PUBLIC_SEARCH_SERVICE_URL: "http://host.docker.internal:8083"

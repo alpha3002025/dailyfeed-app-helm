@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dailyfeed-frontend-config
+  namespace: dailyfeed
+  labels:
+    app: dailyfeed-frontend
+    environment: local-k8s
+data:
+  # Local K8s environment - Both Frontend and Backend run in K8s cluster
+  # Uses Kubernetes internal DNS for service discovery
+  # All backend services expose port 8080 in K8s
+  NEXT_PUBLIC_MEMBER_SERVICE_URL: "http://dailyfeed-member:8080"
+  NEXT_PUBLIC_CONTENT_SERVICE_URL: "http://dailyfeed-content:8080"
+  NEXT_PUBLIC_TIMELINE_SERVICE_URL: "http://dailyfeed-timeline:8080"
+  NEXT_PUBLIC_ACTIVITY_SERVICE_URL: "http://dailyfeed-activity:8080"
+  NEXT_PUBLIC_IMAGE_SERVICE_URL: "http://dailyfeed-image:8080"
+  NEXT_PUBLIC_SEARCH_SERVICE_URL: "http://dailyfeed-search:8080"
