@@ -37,3 +37,10 @@ cd search
 source install-helm-dev.sh
 cd ..
 echo ""
+
+
+echo "🚪 install frontend"
+cd frontend
+source install-dev.sh
+cd ..
+echo ""
