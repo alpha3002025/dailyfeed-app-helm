@@ -17,44 +17,46 @@ spec:
     spec:
       containers:
       - name: dailyfeed-frontend
-        image: alpha300uk/dailyfeed-frontend:v0.0.1  # Replace with your actual image
+        image: alpha300uk/dailyfeed-frontend:v0.0.4
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
           name: http
           protocol: TCP
         env:
-        # Environment variables from ConfigMap
-        - name: NEXT_PUBLIC_MEMBER_SERVICE_URL
+        # Server-side environment variables from ConfigMap
+        # These are used by the API proxy route (/api/proxy/[...path])
+        # NOT by client-side code (no NEXT_PUBLIC_ prefix)
+        - name: MEMBER_SERVICE_URL
           valueFrom:
             configMapKeyRef:
               name: dailyfeed-frontend-config
-              key: NEXT_PUBLIC_MEMBER_SERVICE_URL
-        - name: NEXT_PUBLIC_CONTENT_SERVICE_URL
+              key: MEMBER_SERVICE_URL
+        - name: CONTENT_SERVICE_URL
           valueFrom:
             configMapKeyRef:
               name: dailyfeed-frontend-config
-              key: NEXT_PUBLIC_CONTENT_SERVICE_URL
-        - name: NEXT_PUBLIC_TIMELINE_SERVICE_URL
+              key: CONTENT_SERVICE_URL
+        - name: TIMELINE_SERVICE_URL
           valueFrom:
             configMapKeyRef:
               name: dailyfeed-frontend-config
-              key: NEXT_PUBLIC_TIMELINE_SERVICE_URL
-        - name: NEXT_PUBLIC_ACTIVITY_SERVICE_URL
+              key: TIMELINE_SERVICE_URL
+        - name: ACTIVITY_SERVICE_URL
           valueFrom:
             configMapKeyRef:
               name: dailyfeed-frontend-config
-              key: NEXT_PUBLIC_ACTIVITY_SERVICE_URL
-        - name: NEXT_PUBLIC_IMAGE_SERVICE_URL
+              key: ACTIVITY_SERVICE_URL
+        - name: IMAGE_SERVICE_URL
           valueFrom:
             configMapKeyRef:
               name: dailyfeed-frontend-config
-              key: NEXT_PUBLIC_IMAGE_SERVICE_URL
-        - name: NEXT_PUBLIC_SEARCH_SERVICE_URL
+              key: IMAGE_SERVICE_URL
+        - name: SEARCH_SERVICE_URL
           valueFrom:
             configMapKeyRef:
               name: dailyfeed-frontend-config
-              key: NEXT_PUBLIC_SEARCH_SERVICE_URL
+              key: SEARCH_SERVICE_URL
         resources:
           requests:
             memory: "256Mi"
