@@ -1,4 +1,4 @@
-imageTag: 0.0.2
+imageTag: 0.0.6
 appName: dailyfeed-image
 replicas: 1
 profile: local
@@ -30,9 +30,9 @@ debugValues:
 - name: JAVA_TOOL_OPTIONS
   value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 persistence:
-  enabled: false
+  enabled: true
   storageClass: local-path
   storageRequest: "1Gi"
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   mountPath: /image
