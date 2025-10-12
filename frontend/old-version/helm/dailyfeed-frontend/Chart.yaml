@@ -1,0 +1,14 @@
+apiVersion: v2
+name: dailyfeed-frontend
+description: A Helm chart for DailyFeed Frontend Next.js application
+type: application
+version: 0.1.0
+appVersion: "v0.0.1"
+keywords:
+  - dailyfeed
+  - frontend
+  - nextjs
+  - react
+home: https://github.com/alpha300uk/dailyfeed
+maintainers:
+  - name: alpha300uk

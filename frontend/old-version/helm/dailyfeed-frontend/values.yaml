@@ -1,0 +1,124 @@
+# Default values for dailyfeed-frontend
+# This is a YAML-formatted file.
+
+# Deployment profile: local-dev, local-was, or local-k8s
+profile: local-dev
+
+replicaCount: 2
+
+image:
+  repository: alpha300uk/dailyfeed-frontend
+  pullPolicy: IfNotPresent
+  tag: "v0.0.1"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 3000
+  targetPort: 3000
+
+ingress:
+  enabled: false
+  className: nginx
+  annotations: {}
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  hosts:
+    - host: dailyfeed.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: dailyfeed-frontend-tls
+  #    hosts:
+  #      - dailyfeed.yourdomain.com
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 3000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 3000
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Environment-specific backend service URLs
+env:
+  # Local Development (localhost) - Frontend runs on local machine
+  local-dev:
+    memberServiceUrl: "http://localhost:8084"
+    contentServiceUrl: "http://localhost:8081"
+    timelineServiceUrl: "http://localhost:8082"
+    activityServiceUrl: "http://localhost:8086"
+    imageServiceUrl: "http://localhost:8085"
+    searchServiceUrl: "http://localhost:8083"
+
+  # Local WAS - Frontend in K8s, Backend on local WAS
+  local-was:
+    memberServiceUrl: "http://host.docker.internal:8084"
+    contentServiceUrl: "http://host.docker.internal:8081"
+    timelineServiceUrl: "http://host.docker.internal:8082"
+    activityServiceUrl: "http://host.docker.internal:8086"
+    imageServiceUrl: "http://host.docker.internal:8085"
+    searchServiceUrl: "http://host.docker.internal:8083"
+
+  # Local K8s - Both Frontend and Backend in K8s cluster
+  local-k8s:
+    memberServiceUrl: "http://dailyfeed-member:8080"
+    contentServiceUrl: "http://dailyfeed-content:8080"
+    timelineServiceUrl: "http://dailyfeed-timeline:8080"
+    activityServiceUrl: "http://dailyfeed-activity:8080"
+    imageServiceUrl: "http://dailyfeed-image:8080"
+    searchServiceUrl: "http://dailyfeed-search:8080"

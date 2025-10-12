@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "dailyfeed-frontend.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "dailyfeed-frontend.labels" . | nindent 4 }}
+    environment: {{ .Values.profile }}
+data:
+  {{- $profile := .Values.profile }}
+  {{- $envConfig := index .Values.env $profile }}
+  NEXT_PUBLIC_MEMBER_SERVICE_URL: {{ $envConfig.memberServiceUrl | quote }}
+  NEXT_PUBLIC_CONTENT_SERVICE_URL: {{ $envConfig.contentServiceUrl | quote }}
+  NEXT_PUBLIC_TIMELINE_SERVICE_URL: {{ $envConfig.timelineServiceUrl | quote }}
+  NEXT_PUBLIC_ACTIVITY_SERVICE_URL: {{ $envConfig.activityServiceUrl | quote }}
+  NEXT_PUBLIC_IMAGE_SERVICE_URL: {{ $envConfig.imageServiceUrl | quote }}
+  NEXT_PUBLIC_SEARCH_SERVICE_URL: {{ $envConfig.searchServiceUrl | quote }}

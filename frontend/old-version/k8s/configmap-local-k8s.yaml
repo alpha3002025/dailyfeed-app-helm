@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dailyfeed-frontend-config
+  namespace: dailyfeed
+  labels:
+    app: dailyfeed-frontend
+    environment: local-k8s
+data:
+  # Local K8s environment - Both Frontend and Backend run in K8s cluster
+  # Uses Kubernetes internal DNS for service discovery
+  # All backend services expose port 8080 in K8s
+  #
+  # NOTE: These are SERVER-SIDE environment variables (not NEXT_PUBLIC_*)
+  # They are used by the Next.js API proxy route (/api/proxy/[...path]/route.ts)
+  # to forward client requests to the appropriate backend service
+  MEMBER_SERVICE_URL: "http://dailyfeed-member-svc:8080"
+  CONTENT_SERVICE_URL: "http://dailyfeed-content-svc:8080"
+  TIMELINE_SERVICE_URL: "http://dailyfeed-timeline-svc:8080"
+  ACTIVITY_SERVICE_URL: "http://dailyfeed-activity-svc:8080"
+  IMAGE_SERVICE_URL: "http://dailyfeed-image-svc:8080"
+  SEARCH_SERVICE_URL: "http://dailyfeed-search-svc:8080"

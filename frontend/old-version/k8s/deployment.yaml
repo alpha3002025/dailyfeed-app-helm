@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dailyfeed-frontend
+  namespace: dailyfeed
+  labels:
+    app: dailyfeed-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dailyfeed-frontend
+  template:
+    metadata:
+      labels:
+        app: dailyfeed-frontend
+    spec:
+      containers:
+      - name: dailyfeed-frontend
+        image: alpha300uk/dailyfeed-frontend:v0.0.4
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        env:
+        # Server-side environment variables from ConfigMap
+        # These are used by the API proxy route (/api/proxy/[...path])
+        # NOT by client-side code (no NEXT_PUBLIC_ prefix)
+        - name: MEMBER_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: dailyfeed-frontend-config
+              key: MEMBER_SERVICE_URL
+        - name: CONTENT_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: dailyfeed-frontend-config
+              key: CONTENT_SERVICE_URL
+        - name: TIMELINE_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: dailyfeed-frontend-config
+              key: TIMELINE_SERVICE_URL
+        - name: ACTIVITY_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: dailyfeed-frontend-config
+              key: ACTIVITY_SERVICE_URL
+        - name: IMAGE_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: dailyfeed-frontend-config
+              key: IMAGE_SERVICE_URL
+        - name: SEARCH_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: dailyfeed-frontend-config
+              key: SEARCH_SERVICE_URL
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dailyfeed-frontend
+  namespace: dailyfeed
+  labels:
+    app: dailyfeed-frontend
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    app: dailyfeed-frontend

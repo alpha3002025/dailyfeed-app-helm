@@ -1,0 +1,69 @@
+🎉 DailyFeed Frontend has been deployed!
+
+Release Name: {{ .Release.Name }}
+Namespace: {{ .Release.Namespace }}
+Profile: {{ .Values.profile }}
+
+📋 Deployment Status:
+  kubectl get deployment {{ include "dailyfeed-frontend.fullname" . }} -n {{ .Release.Namespace }}
+
+🔍 Get Pods:
+  kubectl get pods -l "app.kubernetes.io/name={{ include "dailyfeed-frontend.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -n {{ .Release.Namespace }}
+
+📊 View Logs:
+  kubectl logs -f deployment/{{ include "dailyfeed-frontend.fullname" . }} -n {{ .Release.Namespace }}
+
+🌐 Service Information:
+  export SERVICE_NAME={{ include "dailyfeed-frontend.fullname" . }}
+  kubectl get service $SERVICE_NAME -n {{ .Release.Namespace }}
+
+{{- if .Values.ingress.enabled }}
+
+🔗 Ingress Access:
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+
+{{- if not .Values.ingress.tls }}
+⚠️  HTTPS is not enabled. To enable TLS:
+  - Set up cert-manager in your cluster
+  - Update ingress.tls in values.yaml
+  - Add cert-manager annotations
+{{- end }}
+
+{{- else }}
+
+🔗 Access the application:
+  # Port forward to access locally
+  kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "dailyfeed-frontend.fullname" . }} 3000:{{ .Values.service.port }}
+
+  # Then access: http://localhost:3000
+
+⚠️  Ingress is disabled. To enable external access:
+  - Set ingress.enabled=true in values.yaml
+  - Configure ingress.hosts and ingress.className
+  - Ensure Ingress Controller is installed in your cluster
+{{- end }}
+
+📝 Environment Configuration:
+  Profile: {{ .Values.profile }}
+{{- $profile := .Values.profile }}
+{{- $envConfig := index .Values.env $profile }}
+  Member Service: {{ $envConfig.memberServiceUrl }}
+  Content Service: {{ $envConfig.contentServiceUrl }}
+  Timeline Service: {{ $envConfig.timelineServiceUrl }}
+  Activity Service: {{ $envConfig.activityServiceUrl }}
+  Image Service: {{ $envConfig.imageServiceUrl }}
+  Search Service: {{ $envConfig.searchServiceUrl }}
+
+🔄 To switch profiles:
+  helm upgrade {{ .Release.Name }} dailyfeed-frontend \
+    --set profile=<local-dev|local-was|local-k8s> \
+    --namespace {{ .Release.Namespace }}
+
+📚 For more information:
+  - Chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+  - App Version: {{ .Chart.AppVersion }}
+  - View README: cat helm/dailyfeed-frontend/README.md

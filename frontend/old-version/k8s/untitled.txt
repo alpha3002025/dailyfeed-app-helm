@@ -1,0 +1,21 @@
+
+docker build -t dailyfeed-frontend:latest .
+docker tag dailyfeed-frontend:latest alpha300uk/dailyfeed-frontend:latest
+docker push alpha300uk/dailyfeed-frontend:latest
+
+
+
+kubectl apply -f k8s/configmap-local-k8s.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/ingress.yaml
+
+
+
+docker build -t dailyfeed-frontend:v0.0.1 .
+docker tag dailyfeed-frontend:v0.0.1 alpha300uk/dailyfeed-frontend:v0.0.1
+docker push alpha300uk/dailyfeed-frontend:v0.0.1
+
+
+sudo sh -c 'echo "127.0.0.1    dailyfeed.local" >> /etc/hosts'
+
+
