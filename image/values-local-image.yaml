@@ -29,3 +29,10 @@ porbeValues:
 debugValues:
 - name: JAVA_TOOL_OPTIONS
   value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+persistence:
+  enabled: false
+  storageClass: local-path
+  storageRequest: "1Gi"
+  accessModes:
+  - ReadWriteOnce
+  mountPath: /image

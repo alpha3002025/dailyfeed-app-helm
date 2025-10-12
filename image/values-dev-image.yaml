@@ -26,3 +26,10 @@ configSecretItems:
 porbeValues:
   startup:
     failureThreshold: 60
+persistence:
+  enabled: false
+  storageClass: local-path
+  storageRequest: "1Gi"
+  accessModes:
+  - ReadWriteOnce
+  mountPath: /image
