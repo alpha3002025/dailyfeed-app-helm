@@ -1,4 +1,4 @@
-imageTag: 0.0.2
+imageTag: 0.0.4
 appName: dailyfeed-timeline
 replicas: 1
 profile: local
@@ -7,7 +7,7 @@ envValues:
 - name: SERVER_PORT
   value: "8080"
 - name: MEMBER_SERVICE_URL
-  value: http://dailyfeed-member-svc.dailyfeed.svc.cluster.local
+  value: http://dailyfeed-member-svc.dailyfeed.svc.cluster.local:8080
 - name: SEARCH_SERVICE_URL
   value: http://dailyfeed-search-svc.dailyfeed.svc.cluster.local
 - name: CONTENT_SERVICE_URL
@@ -20,7 +20,7 @@ envValues:
   value: http://dailyfeed-image-svc.dailyfeed.svc.cluster.local
 configSecretItems:
 - kafka
-- redis-nosecret
+- redis
 - mysql
 - mongodb
 porbeValues:
