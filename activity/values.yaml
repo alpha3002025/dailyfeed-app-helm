@@ -7,8 +7,8 @@ envValues: [] ## 각 서비스마다 필요에 따라 다르게 지정
 configSecretItems: [] ## 각 서비스마다 필요에 따라 다르게 지정
 resources:
   memory:
-    requests: "500Mi"
-    limits: "1Gi"
+    requests: "250Mi"
+    limits: "500Mi"
   cpu:
     requests: "500m"
     limits: "1000m"

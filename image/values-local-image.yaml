@@ -1,6 +1,6 @@
 imageTag: 0.0.6
 appName: dailyfeed-image
-replicas: 1
+replicas: 3
 profile: local
 portNumber: 8080
 envValues:
