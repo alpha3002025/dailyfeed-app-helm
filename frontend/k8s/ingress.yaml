@@ -7,7 +7,6 @@ metadata:
     app: dailyfeed-frontend
   annotations:
     # Nginx Ingress Controller annotations
-    nginx.ingress.kubernetes.io/rewrite-target: /
     # Optional: Enable CORS if needed
     # nginx.ingress.kubernetes.io/enable-cors: "true"
     # nginx.ingress.kubernetes.io/cors-allow-origin: "*"
