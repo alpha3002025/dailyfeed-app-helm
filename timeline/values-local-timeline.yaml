@@ -1,4 +1,4 @@
-imageTag: 0.0.5
+imageTag: beta-20251015-0001
 appName: dailyfeed-timeline
 replicas: 2
 profile: local

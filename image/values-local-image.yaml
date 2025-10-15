@@ -1,4 +1,4 @@
-imageTag: 0.0.6
+imageTag: beta-20251015-0001
 appName: dailyfeed-image
 replicas: 3
 profile: local

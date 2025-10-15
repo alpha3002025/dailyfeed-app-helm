@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: dailyfeed-frontend
-        image: alpha300uk/dailyfeed-frontend:v0.0.13
+        image: alpha300uk/dailyfeed-frontend:beta-20251015-0001
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
