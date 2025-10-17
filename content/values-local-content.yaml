@@ -30,9 +30,16 @@ debugValues:
 - name: JAVA_TOOL_OPTIONS
   value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 persistence:
-  enabled: false
+  enabled: true
   storageClass: local-path
   storageRequest: "1Gi"
   accessModes:
   - ReadWriteOnce
   mountPath: /data
+  kafkaFailureStorage:
+    enabled: true
+    storageClass: local-path
+    storageRequest: "1Gi"
+    accessModes:
+    - ReadWriteMany
+    mountPath: /kafka-failures
