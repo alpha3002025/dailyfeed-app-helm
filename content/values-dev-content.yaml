@@ -25,3 +25,17 @@ configSecretItems:
 porbeValues:
   startup:
     failureThreshold: 60
+persistence:
+  enabled: true
+  storageClass: local-path
+  storageRequest: "1Gi"
+  accessModes:
+  - ReadWriteOnce
+  mountPath: /data
+  kafkaFailureStorage:
+    enabled: true
+    storageClass: local-path
+    storageRequest: "1Gi"
+    accessModes:
+    - ReadWriteMany
+    mountPath: /kafka-failures
