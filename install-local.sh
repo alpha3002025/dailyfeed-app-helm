@@ -1,47 +1,85 @@
+# Get optional version argument
+VERSION_ARG="$1"
+
+if [ -n "$VERSION_ARG" ]; then
+  echo "📦 Installing with version: $VERSION_ARG"
+else
+  echo "📦 Installing without version argument"
+fi
+echo ""
+
 echo "🔑 install member"
 cd member
-source install-helm-local.sh
+if [ -n "$VERSION_ARG" ]; then
+  source install-helm-local.sh "$VERSION_ARG"
+else
+  source install-helm-local.sh
+fi
 cd ..
 echo ""
 
 echo "🖨️ install content"
 cd content
-source install-helm-local.sh
+if [ -n "$VERSION_ARG" ]; then
+  source install-helm-local.sh "$VERSION_ARG"
+else
+  source install-helm-local.sh
+fi
 cd ..
 echo ""
 
 
 echo "🗞️ install timeline"
 cd timeline
-source install-helm-local.sh
+if [ -n "$VERSION_ARG" ]; then
+  source install-helm-local.sh "$VERSION_ARG"
+else
+  source install-helm-local.sh
+fi
 cd ..
 echo ""
 
 
 echo "📊 install activity"
 cd activity
-source install-helm-local.sh
+if [ -n "$VERSION_ARG" ]; then
+  source install-helm-local.sh "$VERSION_ARG"
+else
+  source install-helm-local.sh
+fi
 cd ..
 echo ""
 
 
 echo "👨🏽‍🎨🖼 install image"
 cd image
-source install-helm-local.sh
+if [ -n "$VERSION_ARG" ]; then
+  source install-helm-local.sh "$VERSION_ARG"
+else
+  source install-helm-local.sh
+fi
 cd ..
 echo ""
 
 
 echo "🔎 install search"
 cd search
-source install-helm-local.sh
+if [ -n "$VERSION_ARG" ]; then
+  source install-helm-local.sh "$VERSION_ARG"
+else
+  source install-helm-local.sh
+fi
 cd ..
 echo ""
 
 
 echo "🚪 install frontend"
 cd frontend
-source install-local.sh
+if [ -n "$VERSION_ARG" ]; then
+  source install-local.sh "$VERSION_ARG"
+else
+  source install-local.sh
+fi
 cd ..
 echo ""
 
