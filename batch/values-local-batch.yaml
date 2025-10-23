@@ -1,0 +1,45 @@
+imageTag: beta-20251015-0001
+appName: dailyfeed-batch
+replicas: 1
+profile: local
+portNumber: 8080
+envValues:
+- name: SERVER_PORT
+  value: "8080"
+- name: MEMBER_SERVICE_URL
+  value: http://dailyfeed-member-svc.dailyfeed.svc.cluster.local:8080
+- name: SEARCH_SERVICE_URL
+  value: http://dailyfeed-search-svc.dailyfeed.svc.cluster.local:8080
+- name: CONTENT_SERVICE_URL
+  value: http://dailyfeed-content-svc.dailyfeed.svc.cluster.local:8080
+- name: ACTIVITY_SERVICE_URL
+  value: http://dailyfeed-activity-svc.dailyfeed.svc.cluster.local:8080
+- name: SEARCH_SERVICE_URL
+  value: http://dailyfeed-search-svc.dailyfeed.svc.cluster.local:8080
+- name: IMAGE_SERVICE_URL
+  value: http://dailyfeed-image-svc.dailyfeed.svc.cluster.local:8080
+configSecretItems:
+- kafka
+- redis
+- mysql
+- mongodb
+porbeValues:
+  startup:
+    failureThreshold: 60
+debugValues:
+- name: JAVA_TOOL_OPTIONS
+  value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+persistence:
+  enabled: true
+  storageClass: local-path
+  storageRequest: "1Gi"
+  accessModes:
+  - ReadWriteOnce
+  mountPath: /data
+  kafkaFailureStorage:
+    enabled: true
+    storageClass: local-path
+    storageRequest: "1Gi"
+    accessModes:
+    - ReadWriteMany
+    mountPath: /kafka-failures
