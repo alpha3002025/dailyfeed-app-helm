@@ -1,6 +1,6 @@
 profile: local
 namespace: dailyfeed
-imageTag: 0.0.1
+imageTag: beta-20251023-0126
 appName: dailyfeed-backend
 replicas: 1
 envValues: [] ## (1) 각 서비스마다 필요에 따라 다르게 지정
