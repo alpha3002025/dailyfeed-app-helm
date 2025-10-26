@@ -25,4 +25,8 @@ helm install -n dailyfeed dailyfeed-timeline \
   -f values-local-timeline.yaml \
   --set imageTag=${IMAGE_TAG}
 
+# HPA 적용
+echo "📈 Applying HPA for timeline service..."
+kubectl apply -f ../hpa-configs/hpa-timeline.yaml
+
 echo "✅ Timeline service installation completed"

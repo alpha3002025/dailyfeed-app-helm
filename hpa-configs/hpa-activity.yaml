@@ -1,0 +1,48 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dailyfeed-activity-hpa
+  namespace: dailyfeed
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dailyfeed-activity
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  # CPU 기반 스케일링 (주 지표)
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  # Memory 기반 스케일링 (보조 지표)
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300  # 5분 안정화 (급격한 스케일 다운 방지)
+      policies:
+      - type: Percent
+        value: 50                       # 한 번에 최대 50% 축소
+        periodSeconds: 60               # 1분마다 평가
+      - type: Pods
+        value: 2                        # 한 번에 최대 2개 축소
+        periodSeconds: 60
+      selectPolicy: Min                 # 더 보수적인 정책 선택
+    scaleUp:
+      stabilizationWindowSeconds: 0     # 즉시 스케일 업 (빠른 대응)
+      policies:
+      - type: Percent
+        value: 100                      # 한 번에 최대 100% 확장 (2배)
+        periodSeconds: 30               # 30초마다 평가
+      - type: Pods
+        value: 4                        # 한 번에 최대 4개 추가
+        periodSeconds: 30
+      selectPolicy: Max                 # 더 적극적인 정책 선택

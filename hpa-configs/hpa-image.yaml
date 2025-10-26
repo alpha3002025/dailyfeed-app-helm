@@ -1,0 +1,48 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dailyfeed-image-hpa
+  namespace: dailyfeed
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dailyfeed-image
+  minReplicas: 2
+  maxReplicas: 15                       # 이미지 처리는 부하가 높을 수 있어 더 많은 replica 허용
+  metrics:
+  # 이미지 처리는 CPU 집약적
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 65          # 더 낮은 임계값 (빠른 대응)
+  # 이미지 처리는 메모리도 많이 사용
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 75          # 더 낮은 임계값
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 40                       # 더 보수적으로 축소
+        periodSeconds: 60
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+      selectPolicy: Min
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 20               # 더 빠르게 확장
+      - type: Pods
+        value: 5                        # 한 번에 더 많이 추가
+        periodSeconds: 20
+      selectPolicy: Max

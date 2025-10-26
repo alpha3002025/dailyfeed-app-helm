@@ -25,4 +25,8 @@ helm install -n dailyfeed dailyfeed-activity \
   -f values-local-activity.yaml \
   --set imageTag=${IMAGE_TAG}
 
+# HPA 적용
+echo "📈 Applying HPA for activity service..."
+kubectl apply -f ../hpa-configs/hpa-activity.yaml
+
 echo "✅ Activity service installation completed"

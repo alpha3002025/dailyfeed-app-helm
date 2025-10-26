@@ -25,4 +25,8 @@ helm install -n dailyfeed dailyfeed-content \
   -f values-local-content.yaml \
   --set imageTag=${IMAGE_TAG}
 
+# HPA 적용
+echo "📈 Applying HPA for content service..."
+kubectl apply -f ../hpa-configs/hpa-content.yaml
+
 echo "✅ Content service installation completed"
