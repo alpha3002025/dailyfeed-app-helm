@@ -1,0 +1,25 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: dailyfeed-image
+  namespace: dailyfeed
+spec:
+  hosts:
+  - dailyfeed-image
+  http:
+  - route:
+    - destination:
+        host: dailyfeed-image
+        subset: v1
+        port:
+          number: 8080
+      weight: 100
+
+    # 이미지 처리는 시간이 더 걸릴 수 있음
+    timeout: 30s
+
+    retries:
+      attempts: 3                     # 이미지 업로드는 재시도 줄임
+      perTryTimeout: 10s              # 이미지 처리 시간 고려
+      retryOn: gateway-error,connect-failure,refused-stream,reset
+      retryRemoteLocalities: true

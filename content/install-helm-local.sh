@@ -12,7 +12,17 @@ fi
 
 IMAGE_TAG=$1
 
+# Istio DestinationRule 및 VirtualService 적용
+echo "📡 Applying Istio configurations for content service..."
+kubectl apply -f ../istio-configs/destinationrule-content.yaml
+kubectl apply -f ../istio-configs/virtualservice-content.yaml
+echo ""
+
+# Helm 설치
+echo "📦 Installing content service..."
 helm install -n dailyfeed dailyfeed-content \
   dailyfeed-backend-chart-0.1.0.tgz \
   -f values-local-content.yaml \
   --set imageTag=${IMAGE_TAG}
+
+echo "✅ Content service installation completed"

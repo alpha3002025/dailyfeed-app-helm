@@ -1,0 +1,25 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: dailyfeed-search
+  namespace: dailyfeed
+spec:
+  hosts:
+  - dailyfeed-search
+  http:
+  - route:
+    - destination:
+        host: dailyfeed-search
+        subset: v1
+        port:
+          number: 8080
+      weight: 100
+
+    # 검색은 조금 더 긴 타임아웃 필요
+    timeout: 15s
+
+    retries:
+      attempts: 5
+      perTryTimeout: 4s
+      retryOn: gateway-error,connect-failure,refused-stream,5xx,retriable-4xx,reset
+      retryRemoteLocalities: true

@@ -1,0 +1,46 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: dailyfeed-activity
+  namespace: dailyfeed
+spec:
+  host: dailyfeed-activity
+  trafficPolicy:
+    # Load balancing: 최소 요청 수를 가진 인스턴스로 라우팅 (기본 ROUND_ROBIN보다 효율적)
+    loadBalancer:
+      simple: LEAST_REQUEST
+      leastRequestLbConfig:
+        choiceCount: 2  # 2개 인스턴스 중 최소 요청 선택
+
+    # Connection Pool Settings
+    connectionPool:
+      tcp:
+        maxConnections: 100           # TCP 최대 연결 수
+        connectTimeout: 3s            # 연결 타임아웃
+        tcpKeepalive:                 # TCP Keepalive 설정
+          time: 7200s                 # 2시간
+          interval: 75s
+          probes: 9
+      http:
+        http1MaxPendingRequests: 100  # HTTP/1.1 대기 요청 수
+        http2MaxRequests: 500         # HTTP/2 최대 요청 수
+        maxRequestsPerConnection: 10  # 연결당 최대 요청 수 (연결 재사용 제한)
+        maxRetries: 3                 # 최대 재시도 수
+        idleTimeout: 30s              # 유휴 연결 타임아웃
+        h2UpgradePolicy: UPGRADE      # HTTP/2 업그레이드 허용
+
+    # Outlier Detection (Circuit Breaker)
+    outlierDetection:
+      consecutive5xxErrors: 5         # 연속 5xx 에러 5회 시 제거
+      consecutiveGatewayErrors: 3     # 연속 게이트웨이 에러 3회 시 제거 (더 민감하게)
+      interval: 1m                    # 분석 간격
+      baseEjectionTime: 5m            # 기본 제거 시간
+      maxEjectionPercent: 50          # 최대 제거 비율 (50% 이상 제거 방지)
+      minHealthPercent: 30            # 최소 건강한 인스턴스 비율 (30% 보장)
+      splitExternalLocalOriginErrors: true  # 외부/내부 오류 구분
+
+  # Subsets (버전별 라우팅용 - 필요시 사용)
+  subsets:
+  - name: v1
+    labels:
+      version: v1
