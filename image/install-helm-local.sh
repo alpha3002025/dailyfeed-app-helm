@@ -25,4 +25,8 @@ helm install -n dailyfeed dailyfeed-image \
   -f values-local-image.yaml \
   --set imageTag=${IMAGE_TAG}
 
+# HPA 적용
+echo "📈 Applying HPA for image service..."
+kubectl apply -f ../hpa-configs/hpa-image.yaml
+
 echo "✅ Image service installation completed"

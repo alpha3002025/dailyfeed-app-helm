@@ -25,4 +25,8 @@ helm install -n dailyfeed dailyfeed-search \
   -f values-local-search.yaml \
   --set imageTag=${IMAGE_TAG}
 
+# HPA 적용
+echo "📈 Applying HPA for search service..."
+kubectl apply -f ../hpa-configs/hpa-search.yaml
+
 echo "✅ Search service installation completed"

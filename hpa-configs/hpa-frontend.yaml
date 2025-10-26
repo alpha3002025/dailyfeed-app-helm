@@ -1,0 +1,48 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dailyfeed-frontend-hpa
+  namespace: dailyfeed
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dailyfeed-frontend
+  minReplicas: 2                        # 프론트엔드는 항상 가용해야 함
+  maxReplicas: 15                       # 사용자 트래픽에 따라 많이 확장 가능
+  metrics:
+  # Next.js 프론트엔드는 CPU 집약적 (SSR, 렌더링)
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 60          # 프론트엔드는 더 낮은 임계값 (빠른 사용자 응답)
+  # 메모리도 중요 (캐싱, 상태 관리)
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 70
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300   # 5분 안정화 (트래픽 변동 고려)
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+      - type: Pods
+        value: 3                        # 프론트엔드는 조금 더 많이 축소 가능
+        periodSeconds: 60
+      selectPolicy: Min
+    scaleUp:
+      stabilizationWindowSeconds: 0     # 즉시 스케일 업 (사용자 경험 최우선)
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15               # 매우 빠르게 확장 (15초)
+      - type: Pods
+        value: 5                        # 한 번에 많이 추가 (트래픽 급증 대비)
+        periodSeconds: 15
+      selectPolicy: Max

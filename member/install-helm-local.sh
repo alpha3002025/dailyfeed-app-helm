@@ -25,4 +25,8 @@ helm install -n dailyfeed dailyfeed-member \
   -f values-local-member.yaml \
   --set imageTag=${IMAGE_TAG}
 
+# HPA 적용
+echo "📈 Applying HPA for member service..."
+kubectl apply -f ../hpa-configs/hpa-member.yaml
+
 echo "✅ Member service installation completed"
