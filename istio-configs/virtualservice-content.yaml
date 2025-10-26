@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: dailyfeed-content
+  namespace: dailyfeed
+spec:
+  hosts:
+  - dailyfeed-content
+  http:
+  - route:
+    - destination:
+        host: dailyfeed-content
+        subset: v1
+        port:
+          number: 8080
+      weight: 100
+
+    timeout: 10s
+
+    retries:
+      attempts: 5
+      perTryTimeout: 3s
+      retryOn: gateway-error,connect-failure,refused-stream,5xx,retriable-4xx,reset
+      retryRemoteLocalities: true

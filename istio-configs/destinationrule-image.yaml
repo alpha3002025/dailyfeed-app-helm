@@ -1,0 +1,42 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: dailyfeed-image
+  namespace: dailyfeed
+spec:
+  host: dailyfeed-image
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+      leastRequestLbConfig:
+        choiceCount: 2
+
+    connectionPool:
+      tcp:
+        maxConnections: 150           # 이미지 처리는 더 많은 연결 필요
+        connectTimeout: 3s
+        tcpKeepalive:
+          time: 7200s
+          interval: 75s
+          probes: 9
+      http:
+        http1MaxPendingRequests: 150
+        http2MaxRequests: 600         # 이미지 업로드/다운로드는 더 많은 요청 처리
+        maxRequestsPerConnection: 5   # 이미지는 큰 요청이므로 연결당 요청 수 줄임
+        maxRetries: 2                 # 이미지 업로드는 재시도 줄임 (중복 방지)
+        idleTimeout: 60s              # 이미지 처리 시간 고려하여 증가
+        h2UpgradePolicy: UPGRADE
+
+    outlierDetection:
+      consecutive5xxErrors: 5
+      consecutiveGatewayErrors: 3
+      interval: 1m
+      baseEjectionTime: 5m
+      maxEjectionPercent: 50
+      minHealthPercent: 30
+      splitExternalLocalOriginErrors: true
+
+  subsets:
+  - name: v1
+    labels:
+      version: v1

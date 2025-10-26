@@ -1,0 +1,42 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: dailyfeed-content
+  namespace: dailyfeed
+spec:
+  host: dailyfeed-content
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+      leastRequestLbConfig:
+        choiceCount: 2
+
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 3s
+        tcpKeepalive:
+          time: 7200s
+          interval: 75s
+          probes: 9
+      http:
+        http1MaxPendingRequests: 100
+        http2MaxRequests: 500
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+        idleTimeout: 30s
+        h2UpgradePolicy: UPGRADE
+
+    outlierDetection:
+      consecutive5xxErrors: 5
+      consecutiveGatewayErrors: 3
+      interval: 1m
+      baseEjectionTime: 5m
+      maxEjectionPercent: 50
+      minHealthPercent: 30
+      splitExternalLocalOriginErrors: true
+
+  subsets:
+  - name: v1
+    labels:
+      version: v1

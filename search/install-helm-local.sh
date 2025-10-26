@@ -12,7 +12,17 @@ fi
 
 IMAGE_TAG=$1
 
+# Istio DestinationRule 및 VirtualService 적용
+echo "📡 Applying Istio configurations for search service..."
+kubectl apply -f ../istio-configs/destinationrule-search.yaml
+kubectl apply -f ../istio-configs/virtualservice-search.yaml
+echo ""
+
+# Helm 설치
+echo "📦 Installing search service..."
 helm install -n dailyfeed dailyfeed-search \
   dailyfeed-backend-chart-0.1.0.tgz \
   -f values-local-search.yaml \
   --set imageTag=${IMAGE_TAG}
+
+echo "✅ Search service installation completed"
