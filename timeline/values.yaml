@@ -7,11 +7,11 @@ envValues: [] ## 각 서비스마다 필요에 따라 다르게 지정
 configSecretItems: [] ## 각 서비스마다 필요에 따라 다르게 지정
 resources:
   memory:
-    requests: "250Mi"
-    limits: "600Mi"
+    requests: "600Mi"
+    limits: "1Gi"
   cpu:
-    requests: "500m"
-    limits: "1000m"
+    requests: "100m"
+    limits: "500m"
 porbeValues:
   readiness:
     httpGetPath: /healthcheck/ready

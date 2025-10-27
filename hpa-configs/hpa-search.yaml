@@ -23,7 +23,7 @@ spec:
       name: memory
       target:
         type: Utilization
-        averageUtilization: 75          # 검색 인덱스 메모리 고려
+        averageUtilization: 90          # 검색 인덱스 메모리 고려
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300
@@ -36,12 +36,12 @@ spec:
         periodSeconds: 60
       selectPolicy: Min
     scaleUp:
-      stabilizationWindowSeconds: 0
+      stabilizationWindowSeconds: 60
       policies:
       - type: Percent
-        value: 100
-        periodSeconds: 25
+        value: 50
+        periodSeconds: 60
       - type: Pods
-        value: 4
-        periodSeconds: 25
+        value: 2
+        periodSeconds: 60
       selectPolicy: Max

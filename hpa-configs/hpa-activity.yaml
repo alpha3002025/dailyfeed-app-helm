@@ -24,7 +24,7 @@ spec:
       name: memory
       target:
         type: Utilization
-        averageUtilization: 80
+        averageUtilization: 90
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300  # 5분 안정화 (급격한 스케일 다운 방지)
@@ -37,12 +37,12 @@ spec:
         periodSeconds: 60
       selectPolicy: Min                 # 더 보수적인 정책 선택
     scaleUp:
-      stabilizationWindowSeconds: 0     # 즉시 스케일 업 (빠른 대응)
+      stabilizationWindowSeconds: 60    # 1분 안정화 (초기 배포 시 과도한 스케일업 방지)
       policies:
       - type: Percent
-        value: 100                      # 한 번에 최대 100% 확장 (2배)
-        periodSeconds: 30               # 30초마다 평가
+        value: 50                       # 한 번에 최대 50% 확장
+        periodSeconds: 60               # 1분마다 평가
       - type: Pods
-        value: 4                        # 한 번에 최대 4개 추가
-        periodSeconds: 30
+        value: 2                        # 한 번에 최대 2개 추가
+        periodSeconds: 60
       selectPolicy: Max                 # 더 적극적인 정책 선택
