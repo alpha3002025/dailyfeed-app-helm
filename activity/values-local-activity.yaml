@@ -23,9 +23,16 @@ configSecretItems:
 - redis
 - mysql
 - mongodb
+resources:
+  memory:
+    requests: "550Mi"
+    limits: "700Mi"
+  cpu:
+    requests: "100m"
+    limits: "500m"
 porbeValues:
   startup:
-    failureThreshold: 60
+    failureThreshold: 120
 debugValues:
 - name: JAVA_TOOL_OPTIONS
   value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"

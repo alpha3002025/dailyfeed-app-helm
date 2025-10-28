@@ -21,7 +21,7 @@ echo ""
 # Helm 설치
 echo "📦 Installing activity service..."
 helm install -n dailyfeed dailyfeed-activity \
-  dailyfeed-backend-chart-0.1.0.tgz \
+  dailyfeed-backend-chart-1.0.0.tgz \
   -f values-local-activity.yaml \
   --set imageTag=${IMAGE_TAG}
 

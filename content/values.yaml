@@ -11,7 +11,7 @@ resources:
     limits: "1200Mi"
   cpu:
     requests: "100m"
-    limits: "500m"
+    limits: "1200m"
 porbeValues:
   readiness:
     httpGetPath: /healthcheck/ready

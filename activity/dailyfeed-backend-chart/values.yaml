@@ -1,17 +1,19 @@
-profile: local
 namespace: dailyfeed
-imageTag: 0.0.2
+imageTag: 0.0.1
 appName: dailyfeed-backend
-replicas: 3
-envValues: [] ## 각 서비스마다 필요에 따라 다르게 지정
-configSecretItems: [] ## 각 서비스마다 필요에 따라 다르게 지정
+replicas: 1
+profile: local
+portNumber: 8080
+envValues: []
+configSecretItems: []
+imagePullPolicy: Always
 resources:
   memory:
-    requests: "400Mi"
-    limits: "800Mi"
+    requests: "500Mi"
+    limits: "1Gi"
   cpu:
-    requests: "30m"
-    limits: "100m"
+    requests: "500m"
+    limits: "1000m"
 porbeValues:
   readiness:
     httpGetPath: /healthcheck/ready
