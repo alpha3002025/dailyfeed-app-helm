@@ -83,7 +83,7 @@ spec:
           preStop:
             exec:
               command: ["/bin/sh", "-c", "sleep 10"]
-        {{- with .Values.porbeValues.readiness }}
+        {{- with .Values.probeValues.readiness }}
         readinessProbe:
           httpGet:
             path: {{ .httpGetPath }}
@@ -93,7 +93,7 @@ spec:
           successThreshold: {{ .successThreshold }}
           failureThreshold: {{ .failureThreshold }}
         {{- end }}
-        {{- with .Values.porbeValues.liveness }}
+        {{- with .Values.probeValues.liveness }}
         livenessProbe:
           httpGet:
             path: {{ .httpGetPath }}
@@ -102,7 +102,7 @@ spec:
           periodSeconds: {{ .periodSeconds }}
           failureThreshold: {{ .failureThreshold }}
         {{- end}}
-        {{- with .Values.porbeValues.startup}}
+        {{- with .Values.probeValues.startup}}
         startupProbe:
           httpGet:
             path: {{ .httpGetPath }}

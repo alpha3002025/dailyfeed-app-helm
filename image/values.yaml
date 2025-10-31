@@ -12,7 +12,7 @@ resources:
   cpu:
     requests: "30m"
     limits: "100m"
-porbeValues:
+probeValues:
   readiness:
     httpGetPath: /healthcheck/ready
     httpGetPort: 8080

@@ -30,7 +30,7 @@ resources:
   cpu:
     requests: "200m"
     limits: "1200m"
-porbeValues:
+probeValues:
   startup:
     failureThreshold: 120
 debugValues:

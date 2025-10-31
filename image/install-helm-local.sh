@@ -21,7 +21,7 @@ echo ""
 # Helm 설치
 echo "📦 Installing image service..."
 helm install -n dailyfeed dailyfeed-image \
-  dailyfeed-backend-chart-1.0.0.tgz \
+  dailyfeed-backend-chart-1.0.1.tgz \
   -f values-local-image.yaml \
   --set imageTag=${IMAGE_TAG}
 

@@ -22,7 +22,7 @@ configSecretItems:
 - redis
 - mysql
 - mongodb
-porbeValues:
+probeValues:
   startup:
     failureThreshold: 60
 persistence:

@@ -13,6 +13,6 @@ fi
 IMAGE_TAG=$1
 
 helm install -n dailyfeed dailyfeed-batch \
-  dailyfeed-backend-chart-1.0.0.tgz \
+  dailyfeed-backend-chart-1.0.1.tgz \
   -f values-local-batch.yaml \
   --set imageTag=${IMAGE_TAG}
