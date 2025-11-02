@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dailyfeed-frontend.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "dailyfeed-frontend.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "dailyfeed-frontend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "dailyfeed-frontend.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "dailyfeed-frontend.serviceAccountName" . }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: {{ .Values.service.name }}
+          containerPort: {{ .Values.service.targetPort }}
+          protocol: {{ .Values.service.protocol }}
+        env:
+        # Server-side environment variables from ConfigMap
+        # These are used by the API proxy route (/api/proxy/[...path])
+        # NOT by client-side code (no NEXT_PUBLIC_ prefix)
+        - name: MEMBER_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "dailyfeed-frontend.fullname" . }}-config
+              key: MEMBER_SERVICE_URL
+        - name: CONTENT_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "dailyfeed-frontend.fullname" . }}-config
+              key: CONTENT_SERVICE_URL
+        - name: TIMELINE_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "dailyfeed-frontend.fullname" . }}-config
+              key: TIMELINE_SERVICE_URL
+        - name: ACTIVITY_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "dailyfeed-frontend.fullname" . }}-config
+              key: ACTIVITY_SERVICE_URL
+        - name: IMAGE_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "dailyfeed-frontend.fullname" . }}-config
+              key: IMAGE_SERVICE_URL
+        - name: SEARCH_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "dailyfeed-frontend.fullname" . }}-config
+              key: SEARCH_SERVICE_URL
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        livenessProbe:
+          {{- toYaml .Values.livenessProbe | nindent 12 }}
+        readinessProbe:
+          {{- toYaml .Values.readinessProbe | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

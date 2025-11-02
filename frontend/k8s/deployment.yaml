@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: dailyfeed-frontend
-        image: alpha300uk/dailyfeed-frontend:beta-20251015-0001
+        image: ghcr.io/alpha3002025/dailyfeed-frontend:{IMAGE_VERSION}
         imagePullPolicy: Always
         ports:
         - containerPort: 3000

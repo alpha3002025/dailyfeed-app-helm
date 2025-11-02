@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "dailyfeed-frontend.fullname" . }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "dailyfeed-frontend.labels" . | nindent 4 }}
+    environment: {{ .Values.environment }}
+data:
+  # Local K8s environment - Both Frontend and Backend run in K8s cluster
+  # Uses Kubernetes internal DNS for service discovery
+  # All backend services expose port 8080 in K8s
+  #
+  # NOTE: These are SERVER-SIDE environment variables (not NEXT_PUBLIC_*)
+  # They are used by the Next.js API proxy route (/api/proxy/[...path]/route.ts)
+  # to forward client requests to the appropriate backend service
+  MEMBER_SERVICE_URL: {{ .Values.backendServices.memberService.url | quote }}
+  CONTENT_SERVICE_URL: {{ .Values.backendServices.contentService.url | quote }}
+  TIMELINE_SERVICE_URL: {{ .Values.backendServices.timelineService.url | quote }}
+  ACTIVITY_SERVICE_URL: {{ .Values.backendServices.activityService.url | quote }}
+  IMAGE_SERVICE_URL: {{ .Values.backendServices.imageService.url | quote }}
+  SEARCH_SERVICE_URL: {{ .Values.backendServices.searchService.url | quote }}
