@@ -5,7 +5,7 @@
 replicaCount: 2
 
 image:
-  repository: ghcr.io/alpha3002025/dailyfeed-frontend
+  repository: ghcr.io/alpha3002025/dailyfeed-frontend-svc
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "cbt-20251103-1"
