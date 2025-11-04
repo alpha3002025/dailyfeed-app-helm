@@ -1,7 +1,8 @@
-imageTag: 0.0.1
+imageTag: cbt-20251103-1
 appName: dailyfeed-member
 replicas: 1
 profile: dev
+portNumber: 8080
 envValues:
 - name: SERVER_PORT
   value: "8080"
@@ -13,8 +14,6 @@ envValues:
   value: http://dailyfeed-content-svc.dailyfeed.svc.cluster.local:8080
 - name: ACTIVITY_SERVICE_URL
   value: http://dailyfeed-activity-svc.dailyfeed.svc.cluster.local:8080
-- name: SEARCH_SERVICE_URL
-  value: http://dailyfeed-search-svc.dailyfeed.svc.cluster.local:8080
 - name: IMAGE_SERVICE_URL
   value: http://dailyfeed-image-svc.dailyfeed.svc.cluster.local:8080
 configSecretItems:
@@ -22,6 +21,23 @@ configSecretItems:
 - redis
 - mysql
 - mongodb
+resources:
+  memory:
+    requests: "650Mi"
+    limits: "800Mi"
+  cpu:
+    requests: "200m"
+    limits: "1200m"
 probeValues:
   startup:
-    failureThreshold: 60
+    failureThreshold: 120
+debugValues:
+- name: JAVA_TOOL_OPTIONS
+  value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+persistence:
+  enabled: false
+  storageClass: local-path
+  storageRequest: "1Gi"
+  accessModes:
+  - ReadWriteOnce
+  mountPath: /data
