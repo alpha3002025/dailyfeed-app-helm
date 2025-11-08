@@ -26,10 +26,10 @@ configSecretItems:
 resources:
   memory:
     requests: "320Mi"
-    limits: "400Mi"
+    limits: "600Mi"
   cpu:
-    requests: "100m"
-    limits: "300m"
+    requests: "200m"
+    limits: "600m"
 probeValues:
   startup:
     failureThreshold: 120

@@ -25,11 +25,11 @@ configSecretItems:
 - mongodb
 resources:
   memory:
-    requests: "550Mi"
+    requests: "320Mi"
     limits: "700Mi"
   cpu:
-    requests: "100m"
-    limits: "500m"
+    requests: "200m"
+    limits: "700m"
 probeValues:
   startup:
     failureThreshold: 120

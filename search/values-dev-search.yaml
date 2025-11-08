@@ -29,7 +29,7 @@ resources:
     limits: "500Mi"
   cpu:
     requests: "100m"
-    limits: "400m"
+    limits: "500m"
 probeValues:
   startup:
     failureThreshold: 120
