@@ -18,6 +18,10 @@ envValues:
   value: http://dailyfeed-search-svc.dailyfeed.svc.cluster.local:8080
 - name: IMAGE_SERVICE_URL
   value: http://dailyfeed-image-svc.dailyfeed.svc.cluster.local:8080
+- name: KAFKA_USER
+  value: ""
+- name: KAFKA_PASSWORD
+  value: ""
 configSecretItems:
 - kafka
 - redis
@@ -25,17 +29,17 @@ configSecretItems:
 - mongodb
 resources:
   memory:
-    requests: "320Mi"
-    limits: "700Mi"
+    requests: "700Mi"
+    limits: "800Mi"
   cpu:
-    requests: "100m"
-    limits: "900m"
+    requests: "300m"
+    limits: "1000m"
 probeValues:
   startup:
     failureThreshold: 120
 debugValues:
-- name: JAVA_TOOL_OPTIONS
-  value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+#- name: JAVA_TOOL_OPTIONS
+#  value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 persistence:
   enabled: false
   storageClass: local-path

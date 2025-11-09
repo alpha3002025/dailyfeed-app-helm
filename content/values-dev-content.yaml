@@ -23,8 +23,8 @@ configSecretItems:
 - mongodb
 resources:
   memory:
-    requests: "650Mi"
-    limits: "800Mi"
+    requests: "550Mi"
+    limits: "1256Mi"
   cpu:
     requests: "500m"
     limits: "1200m"

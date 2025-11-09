@@ -18,6 +18,10 @@ envValues:
   value: http://dailyfeed-search-svc.dailyfeed.svc.cluster.local:8080
 - name: IMAGE_SERVICE_URL
   value: http://dailyfeed-image-svc.dailyfeed.svc.cluster.local:8080
+- name: KAFKA_USER
+  value: ""
+- name: KAFKA_PASSWORD
+  value: ""
 configSecretItems:
 - kafka
 - redis
@@ -25,8 +29,8 @@ configSecretItems:
 - mongodb
 resources:
   memory:
-    requests: "650Mi"
-    limits: "800Mi"
+    requests: "550Mi"
+    limits: "1256Mi"
   cpu:
     requests: "500m"
     limits: "1200m"
