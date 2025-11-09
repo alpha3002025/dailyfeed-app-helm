@@ -17,7 +17,7 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 65          # 검색은 더 빠르게 반응
+        averageUtilization: 80          # 검색은 더 빠르게 반응
   - type: Resource
     resource:
       name: memory

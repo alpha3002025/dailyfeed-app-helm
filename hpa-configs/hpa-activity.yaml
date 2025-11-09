@@ -17,7 +17,7 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
+        averageUtilization: 80
   # Memory 기반 스케일링 (보조 지표)
   - type: Resource
     resource:
