@@ -28,8 +28,8 @@ resources:
     requests: "320Mi"
     limits: "700Mi"
   cpu:
-    requests: "200m"
-    limits: "700m"
+    requests: "100m"
+    limits: "900m"
 probeValues:
   startup:
     failureThreshold: 120

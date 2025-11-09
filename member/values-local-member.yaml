@@ -28,7 +28,7 @@ resources:
     requests: "650Mi"
     limits: "800Mi"
   cpu:
-    requests: "200m"
+    requests: "100m"
     limits: "1200m"
 probeValues:
   startup:
