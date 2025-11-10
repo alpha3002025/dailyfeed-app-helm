@@ -29,17 +29,36 @@ configSecretItems:
 - mongodb
 resources:
   memory:
-    requests: "550Mi"
+    requests: "800Mi"
     limits: "1256Mi"
   cpu:
-    requests: "500m"
-    limits: "1500m"
+    requests: "300m"
+    limits: "2600m"
 probeValues:
+  readiness:
+    httpGetPath: /healthcheck/ready
+    httpGetPort: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    successThreshold: 1
+    failureThreshold: 3
+  liveness:
+    httpGetPath: /healthcheck/live
+    httpGetPort: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 15
+    successThreshold: 1
+    failureThreshold: 3
   startup:
-    failureThreshold: 120
-debugValues:
-- name: JAVA_TOOL_OPTIONS
-  value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    httpGetPath: /healthcheck/startup
+    httpGetPort: 8080
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    successThreshold: 1
+    failureThreshold: 80
+#debugValues:
+#- name: JAVA_TOOL_OPTIONS
+#  value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 persistence:
   enabled: true
   storageClass: local-path

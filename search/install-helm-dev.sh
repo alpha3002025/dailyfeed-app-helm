@@ -21,7 +21,7 @@ echo ""
 # Helm 설치
 echo "📦 Installing search service (dev)..."
 helm install -n dailyfeed dailyfeed-search \
-  dailyfeed-backend-chart-1.0.1.tgz \
+  dailyfeed-backend-chart-1.0.2.tgz \
   -f values-dev-search.yaml \
   --set imageTag=${IMAGE_TAG}
 
