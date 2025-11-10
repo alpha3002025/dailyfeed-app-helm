@@ -17,14 +17,14 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
+        averageUtilization: 80
   # Memory 기반 스케일링 (보조 지표)
   - type: Resource
     resource:
       name: memory
       target:
         type: Utilization
-        averageUtilization: 90
+        averageUtilization: 80
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300  # 5분 안정화 (급격한 스케일 다운 방지)
@@ -37,7 +37,7 @@ spec:
         periodSeconds: 60
       selectPolicy: Min                 # 더 보수적인 정책 선택
     scaleUp:
-      stabilizationWindowSeconds: 60    # 1분 안정화 (초기 배포 시 과도한 스케일업 방지)
+      stabilizationWindowSeconds: 180    # 1분 안정화 (초기 배포 시 과도한 스케일업 방지 - e.g. 메트릭 스파이크)
       policies:
       - type: Percent
         value: 50                       # 한 번에 최대 50% 확장

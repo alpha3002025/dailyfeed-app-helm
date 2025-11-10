@@ -11,29 +11,29 @@ resources:
     limits: "1Gi"
   cpu:
     requests: "100m"
-    limits: "1200m"
+    limits: "2600m"
 probeValues:
   readiness:
     httpGetPath: /healthcheck/ready
     httpGetPort: 8080
-    initialDelaySeconds: 30
-    periodSeconds: 1
+    initialDelaySeconds: 5
+    periodSeconds: 10
     successThreshold: 1
     failureThreshold: 3
   liveness:
     httpGetPath: /healthcheck/live
     httpGetPort: 8080
-    initialDelaySeconds: 30
-    periodSeconds: 1
+    initialDelaySeconds: 5
+    periodSeconds: 15
     successThreshold: 1
-    failureThreshold: 7
+    failureThreshold: 3
   startup:
     httpGetPath: /healthcheck/startup
     httpGetPort: 8080
-    initialDelaySeconds: 30
-    periodSeconds: 1
+    initialDelaySeconds: 10
+    periodSeconds: 5
     successThreshold: 1
-    failureThreshold: 3
+    failureThreshold: 80
 persistence:
   enabled: false ## (3) 기본값은 false 로 지정, 필요한 서비스에서만 helm cli 로 persistence.enabled=true 로 지정해서 배포
   storageClass: local-path
