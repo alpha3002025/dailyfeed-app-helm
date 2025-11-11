@@ -1,0 +1,80 @@
+{{- if .Values.cronJobs.tokenCleanup.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.appName }}-token-cleanup
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}
+    job-type: token-cleanup
+spec:
+  # Cron 스케줄 (기본: 매일 새벽 3시)
+  schedule: {{ .Values.cronJobs.tokenCleanup.schedule | quote }}
+
+  # 동시 실행 정책
+  concurrencyPolicy: {{ .Values.cronJobs.tokenCleanup.concurrencyPolicy }}
+
+  # Job History 관리
+  successfulJobsHistoryLimit: {{ .Values.cronJobs.tokenCleanup.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronJobs.tokenCleanup.failedJobsHistoryLimit }}
+
+  jobTemplate:
+    spec:
+      # Job 완료 후 Pod 유지 시간
+      ttlSecondsAfterFinished: {{ .Values.cronJobs.tokenCleanup.ttlSecondsAfterFinished }}
+
+      # 재시도 횟수
+      backoffLimit: {{ .Values.cronJobs.tokenCleanup.backoffLimit }}
+
+      template:
+        metadata:
+          labels:
+            app: {{ .Values.appName }}
+            job-type: token-cleanup
+        spec:
+          restartPolicy: {{ .Values.cronJobs.tokenCleanup.restartPolicy }}
+
+          containers:
+          - name: {{ .Values.appName }}-token-cleanup
+            image: ghcr.io/alpha3002025/{{ .Values.appName }}-svc:{{ .Values.imageTag }}
+            imagePullPolicy: {{ .Values.imagePullPolicy }}
+
+            # 배치 Job 실행 명령
+            args:
+            - "--spring.profiles.active={{ .Values.profile }}"
+            - "--spring.batch.job.name=tokenCleanupJob"
+            - "--spring.task.scheduling.enabled=false"
+            - "--spring.main.web-application-type=none"
+            - "requestedAt=$(date +%Y-%m-%dT%H:%M:%S.%N)"
+
+            env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.profile }}
+            - name: MYSQL_JDBC_URL
+              value: "jdbc:mysql://mysql.infra.svc.cluster.local:3306/dailyfeed?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8"
+            - name: MYSQL_USERNAME
+              value: "dailyfeed"
+            - name: MYSQL_PASSWORD
+              value: "hitEnter###"
+            - name: MYSQL_SCHEMA
+              value: "dailyfeed"
+            - name: REDIS_HOST
+              value: "redis-master.infra.svc.cluster.local"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: MONGODB_URI
+              value: "mongodb://mongo-dailyfeed-1.mongo-dailyfeed.infra.svc.cluster.local:27017,mongo-dailyfeed-2.mongo-dailyfeed.infra.svc.cluster.local:27017,mongo-dailyfeed-3.mongo-dailyfeed.infra.svc.cluster.local:27017/dailyfeed?replicaSet=rs0"
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka-0.kafka-headless.infra.svc.cluster.local:9092,kafka-1.kafka-headless.infra.svc.cluster.local:9092,kafka-2.kafka-headless.infra.svc.cluster.local:9092"
+            {{- with .Values.cronJobs.tokenCleanup.envValues }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+            resources:
+              requests:
+                memory: {{ .Values.cronJobs.tokenCleanup.resources.memory.requests }}
+                cpu: {{ .Values.cronJobs.tokenCleanup.resources.cpu.requests }}
+              limits:
+                memory: {{ .Values.cronJobs.tokenCleanup.resources.memory.limits }}
+                cpu: {{ .Values.cronJobs.tokenCleanup.resources.cpu.limits }}
+{{- end }}

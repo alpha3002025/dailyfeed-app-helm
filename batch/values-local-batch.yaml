@@ -1,64 +1,102 @@
-imageTag: beta-20251015-0001
+# Local 환경 전용 설정
+namespace: dailyfeed
+imageTag: 1.0.0
 appName: dailyfeed-batch
 replicas: 1
 profile: local
 portNumber: 8080
-envValues:
-- name: SERVER_PORT
-  value: "8080"
-- name: MEMBER_SERVICE_URL
-  value: http://dailyfeed-member-svc.dailyfeed.svc.cluster.local:8080
-- name: SEARCH_SERVICE_URL
-  value: http://dailyfeed-search-svc.dailyfeed.svc.cluster.local:8080
-- name: CONTENT_SERVICE_URL
-  value: http://dailyfeed-content-svc.dailyfeed.svc.cluster.local:8080
-- name: ACTIVITY_SERVICE_URL
-  value: http://dailyfeed-activity-svc.dailyfeed.svc.cluster.local:8080
-- name: SEARCH_SERVICE_URL
-  value: http://dailyfeed-search-svc.dailyfeed.svc.cluster.local:8080
-- name: IMAGE_SERVICE_URL
-  value: http://dailyfeed-image-svc.dailyfeed.svc.cluster.local:8080
-configSecretItems:
-- kafka
-- redis
-- mysql
-- mongodb
+envValues: []
+configSecretItems: []
+imagePullPolicy: Always
 resources:
   memory:
-    requests: "250Mi"
-    limits: "500Mi"
+    requests: "500Mi"
+    limits: "1Gi"
   cpu:
     requests: "500m"
-    limits: "2000m"
+    limits: "1000m"
 probeValues:
   readiness:
     httpGetPath: /healthcheck/ready
     httpGetPort: 8080
-    initialDelaySeconds: 5
-    periodSeconds: 10
+    initialDelaySeconds: 30
+    periodSeconds: 1
     successThreshold: 1
     failureThreshold: 3
   liveness:
     httpGetPath: /healthcheck/live
     httpGetPort: 8080
-    initialDelaySeconds: 5
-    periodSeconds: 15
+    initialDelaySeconds: 30
+    periodSeconds: 1
     successThreshold: 1
-    failureThreshold: 3
+    failureThreshold: 7
   startup:
     httpGetPath: /healthcheck/startup
     httpGetPort: 8080
-    initialDelaySeconds: 10
-    periodSeconds: 5
+    initialDelaySeconds: 30
+    periodSeconds: 1
     successThreshold: 1
-    failureThreshold: 80
-#debugValues:
-#- name: JAVA_TOOL_OPTIONS
-#  value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    failureThreshold: 3
 persistence:
-  enabled: true
+  enabled: false
   storageClass: local-path
   storageRequest: "1Gi"
   accessModes:
   - ReadWriteOnce
-  mountPath: /data
+  mountPath: /image
+
+# CronJob 설정 (Local 환경)
+cronJobs:
+  # JWT Key Rotation Job - Local: 매 시간마다 실행
+  jwtKeyRotation:
+    enabled: true
+    # Cron 스케줄: 매 시간마다 (정각에 실행)
+    schedule: "0 * * * *"
+    # 동시 실행 방지 (Forbid: 이전 작업이 완료될 때까지 새 작업 시작 안함)
+    concurrencyPolicy: "Forbid"
+    # Job History 유지 개수
+    successfulJobsHistoryLimit: 3
+    failedJobsHistoryLimit: 3
+    # Job 완료 후 Pod 유지 시간 (초)
+    ttlSecondsAfterFinished: 3600
+    # 재시도 횟수
+    backoffLimit: 2
+    # Pod 재시작 정책
+    restartPolicy: "Never"
+    # 환경변수 (필요시 추가)
+    envValues: []
+    # 리소스 설정
+    resources:
+      memory:
+        requests: "256Mi"
+        limits: "512Mi"
+      cpu:
+        requests: "200m"
+        limits: "500m"
+
+  # Token Cleanup Job - Local: 매일 새벽 3시
+  tokenCleanup:
+    enabled: true
+    # Cron 스케줄: 매일 새벽 3시에 실행
+    schedule: "0 3 * * *"
+    # 동시 실행 방지
+    concurrencyPolicy: "Forbid"
+    # Job History 유지 개수
+    successfulJobsHistoryLimit: 3
+    failedJobsHistoryLimit: 3
+    # Job 완료 후 Pod 유지 시간 (초)
+    ttlSecondsAfterFinished: 3600
+    # 재시도 횟수
+    backoffLimit: 2
+    # Pod 재시작 정책
+    restartPolicy: "Never"
+    # 환경변수 (필요시 추가)
+    envValues: []
+    # 리소스 설정
+    resources:
+      memory:
+        requests: "256Mi"
+        limits: "512Mi"
+      cpu:
+        requests: "200m"
+        limits: "500m"
