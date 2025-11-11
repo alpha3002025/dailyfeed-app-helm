@@ -1,9 +1,8 @@
-# Dev 환경 전용 설정
 namespace: dailyfeed
 imageTag: 1.0.0
 appName: dailyfeed-batch
 replicas: 1
-profile: dev
+profile: local
 portNumber: 8080
 envValues: []
 configSecretItems: []
@@ -45,13 +44,13 @@ persistence:
   - ReadWriteOnce
   mountPath: /image
 
-# CronJob 설정 (Dev 환경)
+# CronJob 설정 (Production 환경 기본값)
 cronJobs:
-  # JWT Key Rotation Job - Dev: 10시~17시 사이 매 시간마다 실행
+  # JWT Key Rotation Job - Production: 매일 새벽 2시
   jwtKeyRotation:
     enabled: true
-    # Cron 스케줄: 10시부터 17시까지 매 시간 (10:00, 11:00, ..., 17:00)
-    schedule: "0 10-17 * * *"
+    # Cron 스케줄: 매일 새벽 2시에 실행
+    schedule: "0 2 * * *"
     # 동시 실행 방지 (Forbid: 이전 작업이 완료될 때까지 새 작업 시작 안함)
     concurrencyPolicy: "Forbid"
     # Job History 유지 개수
@@ -74,7 +73,7 @@ cronJobs:
         requests: "200m"
         limits: "500m"
 
-  # Token Cleanup Job - Dev: 매일 새벽 3시
+  # Token Cleanup Job
   tokenCleanup:
     enabled: true
     # Cron 스케줄: 매일 새벽 3시에 실행
