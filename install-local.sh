@@ -84,5 +84,16 @@ cd ..
 echo ""
 
 
+echo "🖨️ install batch"
+cd batch
+if [ -n "$VERSION_ARG" ]; then
+  source install-helm-local.sh "$VERSION_ARG"
+else
+  source install-helm-local.sh main
+fi
+cd ..
+echo ""
+
+
 echo "✏️ check -n dailyfeed"
 k get all -n dailyfeed

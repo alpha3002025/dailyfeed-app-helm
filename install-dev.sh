@@ -84,5 +84,16 @@ cd ..
 echo ""
 
 
+echo "🖨️ install batch"
+cd batch
+if [ -n "$VERSION_ARG" ]; then
+  source install-helm-dev.sh "$VERSION_ARG"
+else
+  source install-helm-dev.sh main
+fi
+cd ..
+echo ""
+
+
 echo "✏️ check -n dailyfeed"
 kubectl get all -n dailyfeed
