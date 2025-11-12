@@ -51,21 +51,45 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: {{ .Values.profile }}
             - name: MYSQL_JDBC_URL
-              value: "jdbc:mysql://mysql.infra.svc.cluster.local:3306/dailyfeed?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8"
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config
+                  key: MYSQL_JDBC_URL
             - name: MYSQL_USERNAME
-              value: "dailyfeed"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_USERNAME
             - name: MYSQL_PASSWORD
-              value: "hitEnter###"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_PASSWORD
             - name: MYSQL_SCHEMA
-              value: "dailyfeed"
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config
+                  key: MYSQL_SCHEMA
             - name: REDIS_HOST
-              value: "redis-master.infra.svc.cluster.local"
+              valueFrom:
+                configMapKeyRef:
+                  name: redis-config
+                  key: REDIS_HOST
             - name: REDIS_PORT
-              value: "6379"
+              valueFrom:
+                configMapKeyRef:
+                  name: redis-config
+                  key: REDIS_PORT
             - name: MONGODB_URI
-              value: "mongodb://mongo-dailyfeed-1.mongo-dailyfeed.infra.svc.cluster.local:27017,mongo-dailyfeed-2.mongo-dailyfeed.infra.svc.cluster.local:27017,mongo-dailyfeed-3.mongo-dailyfeed.infra.svc.cluster.local:27017/dailyfeed?replicaSet=rs0"
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: MONGODB_URI
             - name: KAFKA_BOOTSTRAP_SERVERS
-              value: "kafka-0.kafka-headless.infra.svc.cluster.local:9092,kafka-1.kafka-headless.infra.svc.cluster.local:9092,kafka-2.kafka-headless.infra.svc.cluster.local:9092"
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secret
+                  key: KAFKA_BOOTSTRAP_SERVERS
             {{- with .Values.cronJobs.jwtKeyRotation.envValues }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
