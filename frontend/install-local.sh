@@ -5,7 +5,7 @@ if [ -z "$1" ]; then
   echo "❌ Error: IMAGE_VERSION is required"
   echo "Usage: $0 <IMAGE_VERSION>"
   echo "Example: $0 cbt-20251103-1"
-  exit 1
+  return 1
 fi
 
 IMAGE_VERSION=$1

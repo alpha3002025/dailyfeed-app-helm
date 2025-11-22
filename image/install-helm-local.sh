@@ -7,7 +7,7 @@ if [ -z "$1" ]; then
   echo "Error: IMAGE_TAG is required"
   echo "Usage: $0 <IMAGE_TAG>"
   echo "Example: $0 beta-20251023-1234"
-  exit 1
+  return 1
 fi
 
 IMAGE_TAG=$1
