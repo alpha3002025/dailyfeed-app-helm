@@ -15,7 +15,8 @@ spec:
   template:
     metadata:
       annotations:
-        sidecar.istio.io/rewriteAppHTTPProbers: "false"
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+        traffic.sidecar.istio.io/excludeOutboundPorts: "9092,27017,3306,6379"
       labels:
         app: {{ .Values.appName }}
     spec:
@@ -26,22 +27,12 @@ spec:
         ports:
         - containerPort: {{ .Values.portNumber }}
         env:
+        - name: JAVA_TOOL_OPTIONS
+          value: "-Djava.net.preferIPv4Stack=true"
         - name: SPRING_PROFILES_ACTIVE
           value: {{ .Values.profile }}
         - name: SERVER_PORT
           value: "{{ .Values.portNumber }}"
-        - name: MYSQL_JDBC_URL
-          value: "jdbc:mysql://mysql.infra.svc.cluster.local:3306/dailyfeed?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8"
-        - name: MYSQL_USERNAME
-          value: "dailyfeed"
-        - name: MYSQL_PASSWORD
-          value: "hitEnter###"
-        - name: MYSQL_SCHEMA
-          value: "dailyfeed"
-        - name: REDIS_HOST
-          value: "redis-master.infra.svc.cluster.local"
-        - name: REDIS_PORT
-          value: "6379"
         {{- with .Values.envValues }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
