@@ -1,0 +1,104 @@
+{{- if .Values.cronJobs.publishDeadletterRestore.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.appName }}-publisher-dead-letter-restore
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}
+    job-type: publisher-dead-letter-restore
+spec:
+  # Cron 스케줄 (기본: 1분마다 실행)
+  schedule: {{ .Values.cronJobs.publishDeadletterRestore.schedule | quote }}
+
+  # 동시 실행 정책
+  concurrencyPolicy: {{ .Values.cronJobs.publishDeadletterRestore.concurrencyPolicy }}
+
+  # Job History 관리
+  successfulJobsHistoryLimit: {{ .Values.cronJobs.publishDeadletterRestore.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronJobs.publishDeadletterRestore.failedJobsHistoryLimit }}
+
+  jobTemplate:
+    spec:
+      # Job 완료 후 Pod 유지 시간
+      ttlSecondsAfterFinished: {{ .Values.cronJobs.publishDeadletterRestore.ttlSecondsAfterFinished }}
+
+      # 재시도 횟수
+      backoffLimit: {{ .Values.cronJobs.publishDeadletterRestore.backoffLimit }}
+
+      template:
+        metadata:
+          labels:
+            app: {{ .Values.appName }}
+            job-type: publisher-dead-letter-restore
+        spec:
+          restartPolicy: {{ .Values.cronJobs.publishDeadletterRestore.restartPolicy }}
+
+          containers:
+          - name: {{ .Values.appName }}-publisher-dead-letter-restore
+            image: ghcr.io/alpha3002025/{{ .Values.appName }}-svc:{{ .Values.imageTag }}
+            imagePullPolicy: {{ .Values.imagePullPolicy }}
+
+            # 배치 Job 실행 명령
+            args:
+            - "--spring.profiles.active={{ .Values.profile }}"
+            - "--spring.batch.job.name=publishDeadletterRestoreJob"
+            - "--spring.task.scheduling.enabled=false"
+            - "--spring.main.web-application-type=none"
+            - "requestedAt=$(date +%Y-%m-%dT%H:%M:%S.%N)"
+
+            env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.profile }}
+            - name: MYSQL_JDBC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config
+                  key: MYSQL_JDBC_URL
+            - name: MYSQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_USERNAME
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_PASSWORD
+            - name: MYSQL_SCHEMA
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config
+                  key: MYSQL_SCHEMA
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: redis-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: redis-config
+                  key: REDIS_PORT
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: MONGODB_URI
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secret
+                  key: KAFKA_BOOTSTRAP_SERVERS
+            {{- with .Values.cronJobs.publishDeadletterRestore.envValues }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+            resources:
+              requests:
+                memory: {{ .Values.cronJobs.publishDeadletterRestore.resources.memory.requests }}
+                cpu: {{ .Values.cronJobs.publishDeadletterRestore.resources.cpu.requests }}
+              limits:
+                memory: {{ .Values.cronJobs.publishDeadletterRestore.resources.memory.limits }}
+                cpu: {{ .Values.cronJobs.publishDeadletterRestore.resources.cpu.limits }}
+{{- end }}
