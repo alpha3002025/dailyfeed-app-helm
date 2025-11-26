@@ -99,3 +99,57 @@ cronJobs:
       cpu:
         requests: "200m"
         limits: "500m"
+
+  # Listener Dead Letter Restore Job - Kafka Listener Dead Letter 복구 배치
+  listenerDeadletterRestore:
+    enabled: true
+    # Cron 스케줄: 1분마다 실행
+    schedule: "*/1 * * * *"
+    # 동시 실행 방지 (Forbid: 이전 작업이 완료될 때까지 새 작업 시작 안함)
+    concurrencyPolicy: "Forbid"
+    # Job History 유지 개수
+    successfulJobsHistoryLimit: 3
+    failedJobsHistoryLimit: 3
+    # Job 완료 후 Pod 유지 시간 (초)
+    ttlSecondsAfterFinished: 300
+    # 재시도 횟수
+    backoffLimit: 2
+    # Pod 재시작 정책
+    restartPolicy: "Never"
+    # 환경변수 (필요시 추가)
+    envValues: []
+    # 리소스 설정
+    resources:
+      memory:
+        requests: "256Mi"
+        limits: "512Mi"
+      cpu:
+        requests: "200m"
+        limits: "500m"
+
+  # Publisher Dead Letter Restore Job - Kafka Publisher Dead Letter 복구 배치
+  publishDeadletterRestore:
+    enabled: true
+    # Cron 스케줄: 1분마다 실행
+    schedule: "*/1 * * * *"
+    # 동시 실행 방지 (Forbid: 이전 작업이 완료될 때까지 새 작업 시작 안함)
+    concurrencyPolicy: "Forbid"
+    # Job History 유지 개수
+    successfulJobsHistoryLimit: 3
+    failedJobsHistoryLimit: 3
+    # Job 완료 후 Pod 유지 시간 (초)
+    ttlSecondsAfterFinished: 300
+    # 재시도 횟수
+    backoffLimit: 2
+    # Pod 재시작 정책
+    restartPolicy: "Never"
+    # 환경변수 (필요시 추가)
+    envValues: []
+    # 리소스 설정
+    resources:
+      memory:
+        requests: "256Mi"
+        limits: "512Mi"
+      cpu:
+        requests: "200m"
+        limits: "500m"
