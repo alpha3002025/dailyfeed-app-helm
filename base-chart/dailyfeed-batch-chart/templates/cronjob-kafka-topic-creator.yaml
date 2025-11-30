@@ -1,0 +1,86 @@
+{{- if .Values.cronJobs.kafkaTopicCreator.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.appName }}-kafka-topic-creator
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}
+    job-type: kafka-topic-creator
+spec:
+  # Cron 스케줄 (기본: 매일 23:50)
+  schedule: {{ .Values.cronJobs.kafkaTopicCreator.schedule | quote }}
+
+  # 동시 실행 정책
+  concurrencyPolicy: {{ .Values.cronJobs.kafkaTopicCreator.concurrencyPolicy }}
+
+  # Job History 관리
+  successfulJobsHistoryLimit: {{ .Values.cronJobs.kafkaTopicCreator.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronJobs.kafkaTopicCreator.failedJobsHistoryLimit }}
+
+  jobTemplate:
+    spec:
+      # Job 완료 후 Pod 유지 시간
+      ttlSecondsAfterFinished: {{ .Values.cronJobs.kafkaTopicCreator.ttlSecondsAfterFinished }}
+
+      # 재시도 횟수
+      backoffLimit: {{ .Values.cronJobs.kafkaTopicCreator.backoffLimit }}
+
+      template:
+        metadata:
+          labels:
+            app: {{ .Values.appName }}
+            job-type: kafka-topic-creator
+        spec:
+          restartPolicy: {{ .Values.cronJobs.kafkaTopicCreator.restartPolicy }}
+
+          containers:
+          - name: kafka-topic-creator
+            image: {{ .Values.cronJobs.kafkaTopicCreator.image }}
+            imagePullPolicy: {{ .Values.imagePullPolicy }}
+
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+
+              TOMORROW=$(date -d "+1 day" +%Y%m%d 2>/dev/null || date -v+1d +%Y%m%d)
+              echo "Creating topic for date: ${TOMORROW}"
+
+              {{- range .Values.cronJobs.kafkaTopicCreator.topics }}
+              TOPIC="{{ .prefix }}${TOMORROW}"
+              echo "Checking topic: ${TOPIC}"
+
+              # 토픽 존재 여부 확인
+              if kafka-topics.sh --bootstrap-server ${KAFKA_BOOTSTRAP_SERVERS} --list | grep -q "^${TOPIC}$"; then
+                echo "Topic ${TOPIC} already exists, skipping..."
+              else
+                echo "Creating topic ${TOPIC}..."
+                kafka-topics.sh --bootstrap-server ${KAFKA_BOOTSTRAP_SERVERS} \
+                  --create --topic ${TOPIC} \
+                  --partitions {{ .partitions }} \
+                  --replication-factor {{ .replicationFactor }} \
+                  --config retention.ms={{ .retentionMs }} \
+                  --config cleanup.policy={{ .cleanupPolicy }}
+                echo "Topic ${TOPIC} created successfully"
+              fi
+              {{- end }}
+
+              echo "Kafka topic creation job completed"
+
+            env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secret
+                  key: KAFKA_BOOTSTRAP_SERVERS
+
+            resources:
+              requests:
+                memory: {{ .Values.cronJobs.kafkaTopicCreator.resources.memory.requests }}
+                cpu: {{ .Values.cronJobs.kafkaTopicCreator.resources.cpu.requests }}
+              limits:
+                memory: {{ .Values.cronJobs.kafkaTopicCreator.resources.memory.limits }}
+                cpu: {{ .Values.cronJobs.kafkaTopicCreator.resources.cpu.limits }}
+{{- end }}
